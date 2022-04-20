@@ -1,19 +1,16 @@
-//#define terminal.println print  
+
 #define BLYNK_PRINT Serial 
 #define DHTPIN 2
 #define DHTTYPE DHT11
 
-#include <NTPClient.h>               
-#include <TimeLib.h> 
-
+#include <SimpleTimer.h>
 #include <Blynk.h>
 #include <ESP8266WiFi.h>  // for ESP8266
 #include <BlynkSimpleEsp8266.h>  // for ESP8266
 #include <ESP8266mDNS.h>  // For OTA w/ ESP8266
 #include <WiFiUdp.h>  // For OTA
 #include <ArduinoOTA.h>  // For OTA
-#include <Simpletimer.h>
-#include <time.h>
+
 #include <DHT.h>
 #include <math.h>
 
@@ -30,6 +27,7 @@ WidgetTerminal terminal(V3);
 DHT dht(DHTPIN, DHTTYPE);
 SimpleTimer timer;
 
+
 void(* resetFunc) (void) = 0;
 
 void toggle(int num){
@@ -41,6 +39,7 @@ void toggle(int num){
        digitalWrite(Digital_Ports[num],LOW);
     }
 }
+
 void BLYAT(){
    Blynk.virtualWrite(V3, "\n\n");
   Blynk.virtualWrite(V3, "    ___  __          __ \n");
@@ -64,8 +63,6 @@ if (isnan(h) || isnan(t)) {
 Serial.println("Failed to read from DHT sensor!");
 return;
 }
-// You can send any value at any time.
-// Please don't send more that 10 values per second.
 Blynk.virtualWrite(V1, t); // Humidity for gauge
 Blynk.virtualWrite(V2, h); // Temperature for gauge
 Blynk.virtualWrite(V4, t); // Humidity for graph
@@ -141,7 +138,8 @@ void setup() {
   WiFi.begin(ssid, pass); 
   Blynk.config(auth, server, port);
   Blynk.connect();
-  timer.setInterval(1000L, sendSensor);
+  dht.begin();
+  timer.setInterval(2000, sendSensor);
 
   ArduinoOTA.setHostname("listwa");  // For OTA - Use your own device identifying name
   ArduinoOTA.begin();  // For OTA
